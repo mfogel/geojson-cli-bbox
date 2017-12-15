@@ -1,0 +1,68 @@
+{
+  "type": "FeatureCollection",
+  "bbox": [4, 3, 2, 1],
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "test test"
+      },
+      "bbox": [4, 3, 2, 1],
+      "id": 42,
+      "geometry": {
+        "type": "Polygon",
+        "bbox": [4, 3, 2, 1],
+        "coordinates": [
+          [
+            [
+              -10,
+              -10
+            ],
+            [
+              10,
+              -10
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              -10,
+              -10
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "test some more"
+      },
+      "bbox": [4, 3, 2, 1],
+      "id": 43,
+      "geometry": {
+        "type": "GeometryCollection",
+        "bbox": [4, 3, 2, 1],
+        "geometries": [
+          {
+            "type": "Point",
+            "bbox": [4, 3, 2, 1],
+            "coordinates": [
+              10,
+              10
+            ]
+          },
+          {
+            "type": "Point",
+            "bbox": [4, 3, 2, 1],
+            "coordinates": [
+              20,
+              20
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

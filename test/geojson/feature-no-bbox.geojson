@@ -1,0 +1,30 @@
+{
+  "type": "Feature",
+  "properties": {
+    "name": "test test"
+  },
+  "id": 42,
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -10,
+          -10
+        ],
+        [
+          10,
+          -10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          -10,
+          -10
+        ]
+      ]
+    ]
+  }
+}

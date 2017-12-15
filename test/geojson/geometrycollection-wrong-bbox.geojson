@@ -1,0 +1,38 @@
+{
+  "type": "GeometryCollection",
+  "bbox": [-10, -10, 4, 4],
+  "geometries": [
+    {
+      "type": "Polygon",
+      "bbox": [-10, -10, 4, 4],
+      "coordinates": [
+        [
+          [
+            -10,
+            -10
+          ],
+          [
+            10,
+            -10
+          ],
+          [
+            10,
+            10
+          ],
+          [
+            -10,
+            -10
+          ]
+        ]
+      ]
+    },
+    {
+      "type": "Point",
+      "bbox": [-10, -10, 4, 4],
+      "coordinates": [
+        20,
+        20
+      ]
+    }
+  ]
+}
