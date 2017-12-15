@@ -10,5 +10,9 @@
     "bounding-box"
   ],
   "author": "Mike Fogel <mike@fogel.ca>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@turf/bbox": "^5.1.5",
+    "yargs": "^10.0.3"
+  }
 }
