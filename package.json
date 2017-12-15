@@ -1,0 +1,14 @@
+{
+  "name": "geojson-cli-bbox",
+  "version": "0.1.0",
+  "description": "A command-line tool to add, update, or remove bounding boxes from your geojson files",
+  "repository": "github:mfogel/geojson-cli-bbox",
+  "bin": "cli.js",
+  "keywords": [
+    "geojson",
+    "bbox",
+    "bounding-box"
+  ],
+  "author": "Mike Fogel <mike@fogel.ca>",
+  "license": "ISC"
+}
