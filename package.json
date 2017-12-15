@@ -9,6 +9,9 @@
     "test": "jest",
     "test-debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "keywords": [
     "geojson",
     "bbox",
@@ -17,10 +20,13 @@
   "author": "Mike Fogel <mike@fogel.ca>",
   "license": "ISC",
   "dependencies": {
+    "@mapbox/geojsonhint": "^2.0.1",
     "@turf/bbox": "^5.1.5",
+    "stream-to-string": "^1.1.0",
     "yargs": "^10.0.3"
   },
   "devDependencies": {
-    "jest": "^21.2.1"
+    "jest": "^21.2.1",
+    "string-to-stream": "^1.1.0"
   }
 }

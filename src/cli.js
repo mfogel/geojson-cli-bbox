@@ -1,20 +1,25 @@
 #!/usr/bin/env node
 
-const process = require('process')
-const { add, remove } = require('./index.js')
+const { stdin, stdout, exit } = require('process')
+const { addBBoxes, removeBBoxes, wrapWithStreams } = require('./index.js')
+
+const onError = err => {
+  console.error(err.message)
+  exit(1)
+}
 
 require('yargs')
   .command(
     'add',
     'Add or update all bounding boxes',
     yargs => yargs.demandCommand(0, 0),
-    () => add(process.stdin, process.stdout)
+    () => wrapWithStreams(addBBoxes)(stdin, stdout).catch(onError)
   )
   .command(
     'remove',
     'Remove all bounding boxes',
     yargs => yargs.demandCommand(0, 0),
-    () => remove(process.stdin, process.stdout)
+    () => wrapWithStreams(removeBBoxes)(stdin, stdout).catch(onError)
   )
   .demandCommand(1, 'Please specify a command')
   .alias('h', 'help')
