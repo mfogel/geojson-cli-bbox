@@ -3,7 +3,12 @@
   "version": "0.1.0",
   "description": "A command-line tool to add, update, or remove bounding boxes from your geojson files",
   "repository": "github:mfogel/geojson-cli-bbox",
-  "bin": "cli.js",
+  "main": "src/index.js",
+  "bin": "src/cli.js",
+  "scripts": {
+    "test": "jest",
+    "test-debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+  },
   "keywords": [
     "geojson",
     "bbox",
@@ -14,5 +19,8 @@
   "dependencies": {
     "@turf/bbox": "^5.1.5",
     "yargs": "^10.0.3"
+  },
+  "devDependencies": {
+    "jest": "^21.2.1"
   }
 }

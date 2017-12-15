@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const process = require('process')
+const { add, remove } = require('./index.js')
 
 require('yargs')
   .command(
@@ -21,11 +22,3 @@ require('yargs')
   .epilogue('Input is read from stdin, output is written to stdout')
   .strict()
   .parse()
-
-function add (streamIn, streamOut) {
-  console.log('do the add')
-}
-
-function remove (streamIn, streamOut) {
-  console.log('do the remove')
-}
