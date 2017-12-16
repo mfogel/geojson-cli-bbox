@@ -1,6 +1,7 @@
 /* eslint-env jest */
 
 const fs = require('fs')
+const stream = require('stream')
 const toStream = require('string-to-stream')
 const { addBBoxes, removeBBoxes, wrapWithStreams } = require('../src/index.js')
 
@@ -11,11 +12,14 @@ test('error on invalid json input', () => {
   expect(dummy(streamIn, null)).rejects.toEqual(expect.any(SyntaxError))
 })
 
-// TODO: use toThrow() when https://github.com/facebook/jest/pull/4884 released
-test('error on valid json but invalid geojson input', () => {
+test('warn on valid json but invalid geojson input', () => {
   const streamIn = toStream('{"valid": "json, but not geojson"}')
   const dummy = wrapWithStreams(() => {})
-  expect(dummy(streamIn, null)).rejects.toEqual(expect.any(SyntaxError))
+  const streamOut = stream.Writable()
+  streamOut._write = () => {}
+
+  console.warn = jest.fn()
+  dummy(streamIn, streamOut).then(() => expect(console.warn).toHaveBeenCalled())
 })
 
 const readInJson = path => JSON.parse(fs.readFileSync(path, 'utf8'))

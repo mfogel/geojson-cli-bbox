@@ -1,12 +1,35 @@
 const geojsonhint = require('@mapbox/geojsonhint')
+const turfBBox = require('@turf/bbox')
 const toString = require('stream-to-string')
 
 const addBBoxes = geojson => {
+  /* Input geojson altered in-place! */
   removeBBoxes(geojson)
-  // TODO: do the add
+
+  const bbox = [Infinity, Infinity, -Infinity, -Infinity]
+  const updateBBox = newBbox => {
+    bbox[0] = Math.min(bbox[0], newBbox[0])
+    bbox[1] = Math.min(bbox[1], newBbox[1])
+    bbox[2] = Math.max(bbox[2], newBbox[2])
+    bbox[3] = Math.max(bbox[3], newBbox[3])
+  }
+
+  if (geojson['geometry']) updateBBox(addBBoxes(geojson['geometry']))
+  if (geojson['geometries']) {
+    geojson['geometries'].forEach(geom => updateBBox(addBBoxes(geom)))
+  }
+  if (geojson['features']) {
+    geojson['features'].forEach(geom => updateBBox(addBBoxes(geom)))
+  }
+
+  if (geojson['coordinates']) updateBBox(turfBBox(geojson))
+  geojson['bbox'] = bbox
+
+  return bbox // For recursion
 }
 
 const removeBBoxes = geojson => {
+  /* Input geojson altered in-place! */
   delete geojson['bbox']
   if (geojson['geometry']) removeBBoxes(geojson['geometry'])
   if (geojson['geometries']) {
@@ -26,9 +49,8 @@ const parseGeojsonStr = str => {
   }
 
   const errors = geojsonhint.hint(geojson)
-  if (errors[0]) {
-    throw SyntaxError(`Input is not valid GeoJSON: ${errors[0].message}`)
-  }
+  errors.forEach(e => console.warn(`Input is not valid GeoJSON: ${e.message}`))
+
   return geojson
 }
 
