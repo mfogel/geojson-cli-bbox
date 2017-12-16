@@ -5,11 +5,10 @@ const stream = require('stream')
 const toStream = require('string-to-stream')
 const { addBBoxes, removeBBoxes, wrapWithStreams } = require('../src/index.js')
 
-// TODO: use toThrow() when https://github.com/facebook/jest/pull/4884 released
 test('error on invalid json input', () => {
   const streamIn = toStream('this is some bad bad json')
   const dummy = wrapWithStreams(() => {})
-  expect(dummy(streamIn, null)).rejects.toEqual(expect.any(SyntaxError))
+  return expect(dummy(streamIn, null)).rejects.toEqual(expect.any(SyntaxError))
 })
 
 test('warn on valid json but invalid geojson input', () => {
@@ -19,7 +18,23 @@ test('warn on valid json but invalid geojson input', () => {
   streamOut._write = () => {}
 
   console.warn = jest.fn()
-  dummy(streamIn, streamOut).then(() => expect(console.warn).toHaveBeenCalled())
+  expect.assertions(1)
+  return dummy(streamIn, streamOut).then(() => {
+    expect(console.warn).toHaveBeenCalled()
+  })
+})
+
+test('no warnings when silent', () => {
+  const streamIn = toStream('{"valid": "json, but not geojson"}')
+  const dummy = wrapWithStreams(() => {})
+  const streamOut = stream.Writable()
+  streamOut._write = () => {}
+
+  console.warn = jest.fn()
+  expect.assertions(1)
+  return dummy(streamIn, streamOut, true).then(() => {
+    expect(console.warn).not.toHaveBeenCalled()
+  })
 })
 
 const readInJson = path => JSON.parse(fs.readFileSync(path, 'utf8'))

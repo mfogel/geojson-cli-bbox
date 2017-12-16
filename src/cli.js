@@ -13,15 +13,22 @@ require('yargs')
     'add',
     'Add or update all bounding boxes',
     yargs => yargs.demandCommand(0, 0),
-    () => wrapWithStreams(addBBoxes)(stdin, stdout).catch(onError)
+    yargs =>
+      wrapWithStreams(addBBoxes)(stdin, stdout, yargs.silent).catch(onError)
   )
   .command(
     'remove',
     'Remove all bounding boxes',
     yargs => yargs.demandCommand(0, 0),
-    () => wrapWithStreams(removeBBoxes)(stdin, stdout).catch(onError)
+    yargs =>
+      wrapWithStreams(removeBBoxes)(stdin, stdout, yargs.silent).catch(onError)
   )
   .demandCommand(1, 'Please specify a command')
+  .option('s', {
+    alias: 'silent',
+    describe: 'Do not write warnings to stderr',
+    boolean: true
+  })
   .alias('h', 'help')
   .alias('v', 'version')
   .epilogue('Input is read from stdin, output is written to stdout')

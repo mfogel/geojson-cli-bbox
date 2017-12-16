@@ -40,7 +40,7 @@ const removeBBoxes = geojson => {
   }
 }
 
-const parseGeojsonStr = str => {
+const parseGeojsonStr = (str, warn = console.warn) => {
   let geojson
   try {
     geojson = JSON.parse(str)
@@ -49,15 +49,21 @@ const parseGeojsonStr = str => {
   }
 
   const errors = geojsonhint.hint(geojson)
-  errors.forEach(e => console.warn(`Input is not valid GeoJSON: ${e.message}`))
+  errors.forEach(e =>
+    warn(
+      `Warning: Input is not valid GeoJSON: ${e.message}\n`,
+      ` Attempting requested operation anyway`
+    )
+  )
 
   return geojson
 }
 
 const wrapWithStreams = func => {
-  return (streamIn, streamOut) => {
+  return (streamIn, streamOut, silent = false) => {
+    const warn = silent ? () => {} : undefined
     return toString(streamIn, 'utf8').then(str => {
-      let geojson = parseGeojsonStr(str)
+      let geojson = parseGeojsonStr(str, warn)
       func(geojson)
       streamOut.write(JSON.stringify(geojson))
     })
