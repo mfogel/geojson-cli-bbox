@@ -3,6 +3,7 @@
 const fs = require('fs')
 const stream = require('stream')
 const toStream = require('string-to-stream')
+const toString = require('stream-to-string')
 const { addBBoxes, removeBBoxes, wrapWithStreams } = require('../src/index.js')
 
 test('error on invalid json input', () => {
@@ -35,34 +36,59 @@ test('no warnings when silent', () => {
   })
 })
 
+const streamIn = path => fs.createReadStream(path, 'utf8')
 const readInJson = path => JSON.parse(fs.readFileSync(path, 'utf8'))
 
 test('remove bbox from single geometry', () => {
-  let geojson = readInJson('test/geojson/polygon-right-bbox.geojson')
-  removeBBoxes(geojson)
-  expect(geojson).toEqual(readInJson('test/geojson/polygon-no-bbox.geojson'))
+  const strIn = streamIn('test/geojson/polygon-right-bbox.geojson')
+  const strOut = stream.PassThrough()
+  wrapWithStreams(removeBBoxes)(strIn, strOut)
+
+  expect.assertions(1)
+  return toString(strOut).then(function (str) {
+    const jsonOut = JSON.parse(str)
+    expect(jsonOut).toEqual(readInJson('test/geojson/polygon-no-bbox.geojson'))
+  })
 })
 
 test('remove bboxes from GeometryCollection', () => {
-  let geojson = readInJson('test/geojson/geometrycollection-right-bbox.geojson')
-  removeBBoxes(geojson)
-  expect(geojson).toEqual(
-    readInJson('test/geojson/geometrycollection-no-bbox.geojson')
-  )
+  const strIn = streamIn('test/geojson/geometrycollection-right-bbox.geojson')
+  const strOut = stream.PassThrough()
+  wrapWithStreams(removeBBoxes)(strIn, strOut)
+
+  expect.assertions(1)
+  return toString(strOut).then(function (str) {
+    const jsonOut = JSON.parse(str)
+    expect(jsonOut).toEqual(
+      readInJson('test/geojson/geometrycollection-no-bbox.geojson')
+    )
+  })
 })
 
 test('remove bboxes from Feature', () => {
-  let geojson = readInJson('test/geojson/feature-right-bbox.geojson')
-  removeBBoxes(geojson)
-  expect(geojson).toEqual(readInJson('test/geojson/feature-no-bbox.geojson'))
+  const strIn = streamIn('test/geojson/feature-right-bbox.geojson')
+  const strOut = stream.PassThrough()
+  wrapWithStreams(removeBBoxes)(strIn, strOut)
+
+  expect.assertions(1)
+  return toString(strOut).then(function (str) {
+    const jsonOut = JSON.parse(str)
+    expect(jsonOut).toEqual(readInJson('test/geojson/feature-no-bbox.geojson'))
+  })
 })
 
 test('remove bboxes from FeatureCollection', () => {
-  let geojson = readInJson('test/geojson/featurecollection-right-bbox.geojson')
-  removeBBoxes(geojson)
-  expect(geojson).toEqual(
-    readInJson('test/geojson/featurecollection-no-bbox.geojson')
-  )
+  const strIn = streamIn('test/geojson/featurecollection-right-bbox.geojson')
+  const strOut = stream.PassThrough()
+  wrapWithStreams(removeBBoxes)(strIn, strOut)
+
+  expect.assertions(1)
+  return toString(strOut).then(function (str) {
+    const jsonOut = JSON.parse(str)
+    expect(jsonOut).toEqual(
+      readInJson('test/geojson/featurecollection-no-bbox.geojson')
+    )
+  })
 })
 
 test('add bbox to single geometry', () => {

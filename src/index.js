@@ -66,6 +66,7 @@ const wrapWithStreams = func => {
       let geojson = parseGeojsonStr(str, warn)
       func(geojson)
       streamOut.write(JSON.stringify(geojson))
+      streamOut.end()
     })
   }
 }
