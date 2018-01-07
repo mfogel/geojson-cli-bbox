@@ -14,8 +14,7 @@ test('error on invalid json input', () => {
 test('warn on valid json but invalid geojson input', () => {
   const streamIn = toStream('{"valid": "json, but not geojson"}')
   const dummy = wrapWithStreams(() => {})
-  const streamOut = stream.Writable()
-  streamOut._write = () => {}
+  const streamOut = stream.PassThrough()
 
   console.warn = jest.fn()
   expect.assertions(1)
@@ -27,8 +26,7 @@ test('warn on valid json but invalid geojson input', () => {
 test('no warnings when silent', () => {
   const streamIn = toStream('{"valid": "json, but not geojson"}')
   const dummy = wrapWithStreams(() => {})
-  const streamOut = stream.Writable()
-  streamOut._write = () => {}
+  const streamOut = stream.PassThrough()
 
   console.warn = jest.fn()
   expect.assertions(1)
