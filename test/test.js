@@ -36,12 +36,12 @@ test('no warnings when silent', () => {
   })
 })
 
-const streamIn = path => fs.createReadStream(path, 'utf8')
-const readInStr = path => fs.readFileSync(path, 'utf8')
-const readInJson = path => JSON.parse(readInStr(path))
+const streamIn = fn => fs.createReadStream('test/geojson/' + fn, 'utf8')
+const readInStr = fn => fs.readFileSync('test/geojson/' + fn, 'utf8')
+const readInJson = fn => JSON.parse(readInStr(fn))
 
 test('remove bbox from single geometry', () => {
-  const strIn = streamIn('test/geojson/polygon-right-bbox.geojson')
+  const strIn = streamIn('polygon-right-bbox.geojson')
   const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
   strIn.pipe(remover).pipe(strOut)
@@ -49,12 +49,13 @@ test('remove bbox from single geometry', () => {
   expect.assertions(1)
   return toString(strOut).then(function (str) {
     const jsonOut = JSON.parse(str)
-    expect(jsonOut).toEqual(readInJson('test/geojson/polygon-no-bbox.geojson'))
+    const jsonExp = readInJson('polygon-no-bbox.geojson')
+    expect(jsonOut).toEqual(jsonExp)
   })
 })
 
 test('remove bboxes from GeometryCollection', () => {
-  const strIn = streamIn('test/geojson/geometrycollection-right-bbox.geojson')
+  const strIn = streamIn('geometrycollection-right-bbox.geojson')
   const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
   strIn.pipe(remover).pipe(strOut)
@@ -62,14 +63,13 @@ test('remove bboxes from GeometryCollection', () => {
   expect.assertions(1)
   return toString(strOut).then(function (str) {
     const jsonOut = JSON.parse(str)
-    expect(jsonOut).toEqual(
-      readInJson('test/geojson/geometrycollection-no-bbox.geojson')
-    )
+    const jsonExp = readInJson('geometrycollection-no-bbox.geojson')
+    expect(jsonOut).toEqual(jsonExp)
   })
 })
 
 test('remove bboxes from Feature', () => {
-  const strIn = streamIn('test/geojson/feature-right-bbox.geojson')
+  const strIn = streamIn('feature-right-bbox.geojson')
   const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
   strIn.pipe(remover).pipe(strOut)
@@ -77,12 +77,13 @@ test('remove bboxes from Feature', () => {
   expect.assertions(1)
   return toString(strOut).then(function (str) {
     const jsonOut = JSON.parse(str)
-    expect(jsonOut).toEqual(readInJson('test/geojson/feature-no-bbox.geojson'))
+    const jsonExp = readInJson('feature-no-bbox.geojson')
+    expect(jsonOut).toEqual(jsonExp)
   })
 })
 
 test('remove bboxes from FeatureCollection', () => {
-  const strIn = streamIn('test/geojson/featurecollection-right-bbox.geojson')
+  const strIn = streamIn('featurecollection-right-bbox.geojson')
   const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
   strIn.pipe(remover).pipe(strOut)
@@ -90,14 +91,13 @@ test('remove bboxes from FeatureCollection', () => {
   expect.assertions(1)
   return toString(strOut).then(function (str) {
     const jsonOut = JSON.parse(str)
-    expect(jsonOut).toEqual(
-      readInJson('test/geojson/featurecollection-no-bbox.geojson')
-    )
+    const jsonExp = readInJson('featurecollection-no-bbox.geojson')
+    expect(jsonOut).toEqual(jsonExp)
   })
 })
 
-test.only('remove bboxes read in awkward chunks', () => {
-  const strIn = readInStr('test/geojson/featurecollection-right-bbox.geojson')
+test('remove bboxes read in awkward chunks', () => {
+  const strIn = readInStr('featurecollection-right-bbox.geojson')
   const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
   remover.pipe(strOut)
@@ -111,64 +111,55 @@ test.only('remove bboxes read in awkward chunks', () => {
   expect.assertions(1)
   return toString(strOut).then(function (str) {
     const jsonOut = JSON.parse(str)
-    expect(jsonOut).toEqual(
-      readInJson('test/geojson/featurecollection-no-bbox.geojson')
-    )
+    const jsonExp = readInJson('featurecollection-no-bbox.geojson')
+    expect(jsonOut).toEqual(jsonExp)
   })
 })
 
 test('add bbox to single geometry', () => {
-  let geojson = readInJson('test/geojson/polygon-no-bbox.geojson')
+  let geojson = readInJson('polygon-no-bbox.geojson')
   addBBoxes(geojson)
-  expect(geojson).toEqual(readInJson('test/geojson/polygon-right-bbox.geojson'))
+  expect(geojson).toEqual(readInJson('polygon-right-bbox.geojson'))
 })
 
 test('add bboxes to GeometryCollection', () => {
-  let geojson = readInJson('test/geojson/geometrycollection-no-bbox.geojson')
+  let geojson = readInJson('geometrycollection-no-bbox.geojson')
   addBBoxes(geojson)
-  expect(geojson).toEqual(
-    readInJson('test/geojson/geometrycollection-right-bbox.geojson')
-  )
+  expect(geojson).toEqual(readInJson('geometrycollection-right-bbox.geojson'))
 })
 
 test('add bbox to Feature', () => {
-  let geojson = readInJson('test/geojson/feature-no-bbox.geojson')
+  let geojson = readInJson('feature-no-bbox.geojson')
   addBBoxes(geojson)
-  expect(geojson).toEqual(readInJson('test/geojson/feature-right-bbox.geojson'))
+  expect(geojson).toEqual(readInJson('feature-right-bbox.geojson'))
 })
 
 test('add bbox to FeatureCollection', () => {
-  let geojson = readInJson('test/geojson/featurecollection-no-bbox.geojson')
+  let geojson = readInJson('featurecollection-no-bbox.geojson')
   addBBoxes(geojson)
-  expect(geojson).toEqual(
-    readInJson('test/geojson/featurecollection-right-bbox.geojson')
-  )
+  expect(geojson).toEqual(readInJson('featurecollection-right-bbox.geojson'))
 })
 
 test('update bbox to single geometry', () => {
-  let geojson = readInJson('test/geojson/polygon-wrong-bbox.geojson')
+  let geojson = readInJson('polygon-wrong-bbox.geojson')
   addBBoxes(geojson)
-  expect(geojson).toEqual(readInJson('test/geojson/polygon-right-bbox.geojson'))
+  expect(geojson).toEqual(readInJson('polygon-right-bbox.geojson'))
 })
 
 test('update bboxes to GeometryCollection', () => {
-  let geojson = readInJson('test/geojson/geometrycollection-wrong-bbox.geojson')
+  let geojson = readInJson('geometrycollection-wrong-bbox.geojson')
   addBBoxes(geojson)
-  expect(geojson).toEqual(
-    readInJson('test/geojson/geometrycollection-right-bbox.geojson')
-  )
+  expect(geojson).toEqual(readInJson('geometrycollection-right-bbox.geojson'))
 })
 
 test('update bbox to Feature', () => {
-  let geojson = readInJson('test/geojson/feature-wrong-bbox.geojson')
+  let geojson = readInJson('feature-wrong-bbox.geojson')
   addBBoxes(geojson)
-  expect(geojson).toEqual(readInJson('test/geojson/feature-right-bbox.geojson'))
+  expect(geojson).toEqual(readInJson('feature-right-bbox.geojson'))
 })
 
 test('update bbox to FeatureCollection', () => {
-  let geojson = readInJson('test/geojson/featurecollection-wrong-bbox.geojson')
+  let geojson = readInJson('featurecollection-wrong-bbox.geojson')
   addBBoxes(geojson)
-  expect(geojson).toEqual(
-    readInJson('test/geojson/featurecollection-right-bbox.geojson')
-  )
+  expect(geojson).toEqual(readInJson('featurecollection-right-bbox.geojson'))
 })
