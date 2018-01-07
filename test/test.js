@@ -37,7 +37,8 @@ test('no warnings when silent', () => {
 })
 
 const streamIn = path => fs.createReadStream(path, 'utf8')
-const readInJson = path => JSON.parse(fs.readFileSync(path, 'utf8'))
+const readInStr = path => fs.readFileSync(path, 'utf8')
+const readInJson = path => JSON.parse(readInStr(path))
 
 test('remove bbox from single geometry', () => {
   const strIn = streamIn('test/geojson/polygon-right-bbox.geojson')
@@ -85,6 +86,27 @@ test('remove bboxes from FeatureCollection', () => {
   const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
   strIn.pipe(remover).pipe(strOut)
+
+  expect.assertions(1)
+  return toString(strOut).then(function (str) {
+    const jsonOut = JSON.parse(str)
+    expect(jsonOut).toEqual(
+      readInJson('test/geojson/featurecollection-no-bbox.geojson')
+    )
+  })
+})
+
+test.only('remove bboxes read in awkward chunks', () => {
+  const strIn = readInStr('test/geojson/featurecollection-right-bbox.geojson')
+  const remover = new RemoveBBoxes()
+  const strOut = stream.PassThrough()
+  remover.pipe(strOut)
+
+  // feed the str in in 50 char increments
+  for (let i = 0; (i += 50); i <= strIn.length) {
+    remover.write(strIn.substr(i, i + 50))
+  }
+  remover.end()
 
   expect.assertions(1)
   return toString(strOut).then(function (str) {
