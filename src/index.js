@@ -1,3 +1,4 @@
+const { Transform } = require('stream')
 const geojsonhint = require('@mapbox/geojsonhint')
 const turfBBox = require('@turf/bbox')
 const toString = require('stream-to-string')
@@ -71,4 +72,22 @@ const wrapWithStreams = func => {
   }
 }
 
-module.exports = { addBBoxes, removeBBoxes, wrapWithStreams }
+class RemoveBBoxes extends Transform {
+  constructor (options = {}) {
+    options['decodeStrings'] = false
+    super(options)
+  }
+
+  _transform (chunk, encoding, callback) {
+    let geojson = parseGeojsonStr(chunk)
+    removeBBoxes(geojson)
+    callback(null, JSON.stringify(geojson))
+  }
+}
+
+module.exports = {
+  addBBoxes,
+  removeBBoxes,
+  wrapWithStreams,
+  RemoveBBoxes
+}

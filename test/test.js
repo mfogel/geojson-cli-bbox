@@ -4,7 +4,7 @@ const fs = require('fs')
 const stream = require('stream')
 const toStream = require('string-to-stream')
 const toString = require('stream-to-string')
-const { addBBoxes, removeBBoxes, wrapWithStreams } = require('../src/index.js')
+const { addBBoxes, RemoveBBoxes, wrapWithStreams } = require('../src/index.js')
 
 test('error on invalid json input', () => {
   const streamIn = toStream('this is some bad bad json')
@@ -41,8 +41,9 @@ const readInJson = path => JSON.parse(fs.readFileSync(path, 'utf8'))
 
 test('remove bbox from single geometry', () => {
   const strIn = streamIn('test/geojson/polygon-right-bbox.geojson')
+  const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
-  wrapWithStreams(removeBBoxes)(strIn, strOut)
+  strIn.pipe(remover).pipe(strOut)
 
   expect.assertions(1)
   return toString(strOut).then(function (str) {
@@ -53,8 +54,9 @@ test('remove bbox from single geometry', () => {
 
 test('remove bboxes from GeometryCollection', () => {
   const strIn = streamIn('test/geojson/geometrycollection-right-bbox.geojson')
+  const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
-  wrapWithStreams(removeBBoxes)(strIn, strOut)
+  strIn.pipe(remover).pipe(strOut)
 
   expect.assertions(1)
   return toString(strOut).then(function (str) {
@@ -67,8 +69,9 @@ test('remove bboxes from GeometryCollection', () => {
 
 test('remove bboxes from Feature', () => {
   const strIn = streamIn('test/geojson/feature-right-bbox.geojson')
+  const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
-  wrapWithStreams(removeBBoxes)(strIn, strOut)
+  strIn.pipe(remover).pipe(strOut)
 
   expect.assertions(1)
   return toString(strOut).then(function (str) {
@@ -79,8 +82,9 @@ test('remove bboxes from Feature', () => {
 
 test('remove bboxes from FeatureCollection', () => {
   const strIn = streamIn('test/geojson/featurecollection-right-bbox.geojson')
+  const remover = new RemoveBBoxes()
   const strOut = stream.PassThrough()
-  wrapWithStreams(removeBBoxes)(strIn, strOut)
+  strIn.pipe(remover).pipe(strOut)
 
   expect.assertions(1)
   return toString(strOut).then(function (str) {
