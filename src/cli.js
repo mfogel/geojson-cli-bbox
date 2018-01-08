@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 const { stdin, stdout, exit } = require('process')
-const { addUpdateBBoxes, removeBBoxes, wrapWithStreams } = require('./index.js')
+const { AddUpdateBBoxes, RemoveBBoxes } = require('./index.js')
 
 const onError = err => {
   console.error(err.message)
   exit(1)
 }
+
+const getWarn = silent => (silent ? () => {} : console.warn)
 
 require('yargs')
   .command(
@@ -14,16 +16,20 @@ require('yargs')
     'Add or update all bounding boxes',
     yargs => yargs.demandCommand(0, 0),
     yargs =>
-      wrapWithStreams(addUpdateBBoxes)(stdin, stdout, yargs.silent).catch(
-        onError
-      )
+      stdin
+        .pipe(new AddUpdateBBoxes({ warn: getWarn(yargs.silent) }))
+        .on('error', onError)
+        .pipe(stdout)
   )
   .command(
     'remove',
     'Remove all bounding boxes',
     yargs => yargs.demandCommand(0, 0),
     yargs =>
-      wrapWithStreams(removeBBoxes)(stdin, stdout, yargs.silent).catch(onError)
+      stdin
+        .pipe(new RemoveBBoxes({ warn: getWarn(yargs.silent) }))
+        .on('error', onError)
+        .pipe(stdout)
   )
   .demandCommand(1, 'Please specify a command')
   .option('s', {

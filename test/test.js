@@ -9,46 +9,48 @@ const {
   removeBBoxes,
   GeojsonNullTransform,
   AddUpdateBBoxes,
-  RemoveBBoxes,
-  wrapWithStreams
+  RemoveBBoxes
 } = require('../src/index.js')
 
 test('error on invalid json input', () => {
-  const streamIn = toStream('this is some bad bad json')
-  const dummy = wrapWithStreams(() => {})
-  return expect(dummy(streamIn, null)).rejects.toEqual(expect.any(SyntaxError))
+  const strIn = toStream('this is some bad bad json')
+  const onError = jest.fn()
+  const nullTransform = new GeojsonNullTransform()
+  const strOut = stream.PassThrough()
+
+  strIn
+    .pipe(nullTransform)
+    .on('error', onError)
+    .pipe(strOut)
+  strOut.end() // error doesn't propogate, must close final stream explicitly
+
+  expect.assertions(1)
+  return toString(strOut).then(function (str) {
+    expect(onError).toHaveBeenCalled()
+  })
 })
 
 test('warn on valid json but invalid geojson input', () => {
-  const streamIn = toStream('{"valid": "json, but not geojson"}')
-  const dummy = wrapWithStreams(() => {})
-  const streamOut = stream.PassThrough()
+  const strIn = toStream('{"valid": "json, but not geojson"}')
+  const warn = jest.fn()
+  const nullTransform = new GeojsonNullTransform({ warn })
+  const strOut = stream.PassThrough()
+  strIn.pipe(nullTransform).pipe(strOut)
 
-  console.warn = jest.fn()
   expect.assertions(1)
-  return dummy(streamIn, streamOut).then(() => {
-    expect(console.warn).toHaveBeenCalled()
+  return toString(strOut).then(function (str) {
+    expect(warn).toHaveBeenCalled()
   })
 })
 
-test('no warnings when silent', () => {
-  const streamIn = toStream('{"valid": "json, but not geojson"}')
-  const dummy = wrapWithStreams(() => {})
-  const streamOut = stream.PassThrough()
-
-  console.warn = jest.fn()
-  expect.assertions(1)
-  return dummy(streamIn, streamOut, true).then(() => {
-    expect(console.warn).not.toHaveBeenCalled()
-  })
-})
-
-const streamIn = fn => fs.createReadStream('test/geojson/' + fn, 'utf8')
 const readInStr = fn => fs.readFileSync('test/geojson/' + fn, 'utf8')
 const readInJson = fn => JSON.parse(readInStr(fn))
 
 test('stream json in one chunk', () => {
-  const strIn = streamIn('polygon-right-bbox.geojson')
+  const strIn = fs.createReadStream(
+    'test/geojson/polygon-right-bbox.geojson',
+    'utf8'
+  )
   const nullTransform = new GeojsonNullTransform()
   const strOut = stream.PassThrough()
   strIn.pipe(nullTransform).pipe(strOut)

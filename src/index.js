@@ -1,7 +1,6 @@
 const { Transform } = require('stream')
 const geojsonhint = require('@mapbox/geojsonhint')
 const turfBBox = require('@turf/bbox')
-const toString = require('stream-to-string')
 
 const addUpdateBBoxes = geojson => {
   /* Input geojson altered in-place! */
@@ -39,41 +38,11 @@ const removeBBoxes = geojson => {
   }
 }
 
-const parseGeojsonStr = (str, warn = console.warn) => {
-  let geojson
-  try {
-    geojson = JSON.parse(str)
-  } catch (err) {
-    throw SyntaxError(`Unable to parse input as JSON: ${err.message}`)
-  }
-
-  const errors = geojsonhint.hint(geojson)
-  errors.forEach(e =>
-    warn(
-      `Warning: Input is not valid GeoJSON: ${e.message}\n`,
-      ` Attempting requested operation anyway`
-    )
-  )
-
-  return geojson
-}
-
-const wrapWithStreams = func => {
-  return (streamIn, streamOut, silent = false) => {
-    const warn = silent ? () => {} : undefined
-    return toString(streamIn, 'utf8').then(str => {
-      let geojson = parseGeojsonStr(str, warn)
-      func(geojson)
-      streamOut.write(JSON.stringify(geojson))
-      streamOut.end()
-    })
-  }
-}
-
 class GeojsonNullTransform extends Transform {
   constructor (options = {}) {
     options['decodeStrings'] = false
     super(options)
+    this.warn = options['warn']
     this.input = ''
   }
 
@@ -83,9 +52,29 @@ class GeojsonNullTransform extends Transform {
   }
 
   _flush (callback) {
-    let geojson = parseGeojsonStr(this.input)
-    this.operate(geojson)
-    callback(null, JSON.stringify(geojson))
+    try {
+      let geojson = this.parse(this.input)
+      this.operate(geojson)
+      callback(null, JSON.stringify(geojson))
+    } catch (err) {
+      callback(err)
+    }
+  }
+
+  parse (str) {
+    let geojson
+    try {
+      geojson = JSON.parse(str)
+    } catch (err) {
+      throw new SyntaxError(`Unable to parse input as JSON: ${err.message}`)
+    }
+
+    const errors = geojsonhint.hint(geojson)
+    errors.forEach(e =>
+      this.warn(`Warning: Input is not valid GeoJSON: ${e.message}`)
+    )
+
+    return geojson
   }
 
   operate (geojson) {
@@ -109,7 +98,6 @@ class AddUpdateBBoxes extends GeojsonNullTransform {
 module.exports = {
   addUpdateBBoxes,
   removeBBoxes,
-  wrapWithStreams,
   GeojsonNullTransform,
   AddUpdateBBoxes,
   RemoveBBoxes
