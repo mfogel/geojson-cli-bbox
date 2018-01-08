@@ -3,10 +3,8 @@ const geojsonhint = require('@mapbox/geojsonhint')
 const turfBBox = require('@turf/bbox')
 const toString = require('stream-to-string')
 
-const addBBoxes = geojson => {
+const addUpdateBBoxes = geojson => {
   /* Input geojson altered in-place! */
-  removeBBoxes(geojson)
-
   const bbox = [Infinity, Infinity, -Infinity, -Infinity]
   const updateBBox = newBbox => {
     bbox[0] = Math.min(bbox[0], newBbox[0])
@@ -15,12 +13,12 @@ const addBBoxes = geojson => {
     bbox[3] = Math.max(bbox[3], newBbox[3])
   }
 
-  if (geojson['geometry']) updateBBox(addBBoxes(geojson['geometry']))
+  if (geojson['geometry']) updateBBox(addUpdateBBoxes(geojson['geometry']))
   if (geojson['geometries']) {
-    geojson['geometries'].forEach(geom => updateBBox(addBBoxes(geom)))
+    geojson['geometries'].forEach(geom => updateBBox(addUpdateBBoxes(geom)))
   }
   if (geojson['features']) {
-    geojson['features'].forEach(geom => updateBBox(addBBoxes(geom)))
+    geojson['features'].forEach(geom => updateBBox(addUpdateBBoxes(geom)))
   }
 
   if (geojson['coordinates']) updateBBox(turfBBox(geojson))
@@ -91,6 +89,7 @@ class GeojsonNullTransform extends Transform {
   }
 
   operate (geojson) {
+    // makes for easy testing
     return geojson
   }
 }
@@ -101,9 +100,17 @@ class RemoveBBoxes extends GeojsonNullTransform {
   }
 }
 
+class AddUpdateBBoxes extends GeojsonNullTransform {
+  operate (geojson) {
+    addUpdateBBoxes(geojson)
+  }
+}
+
 module.exports = {
-  addBBoxes,
+  addUpdateBBoxes,
   removeBBoxes,
   wrapWithStreams,
+  GeojsonNullTransform,
+  AddUpdateBBoxes,
   RemoveBBoxes
 }

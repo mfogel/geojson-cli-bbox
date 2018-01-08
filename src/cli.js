@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { stdin, stdout, exit } = require('process')
-const { addBBoxes, removeBBoxes, wrapWithStreams } = require('./index.js')
+const { addUpdateBBoxes, removeBBoxes, wrapWithStreams } = require('./index.js')
 
 const onError = err => {
   console.error(err.message)
@@ -14,7 +14,9 @@ require('yargs')
     'Add or update all bounding boxes',
     yargs => yargs.demandCommand(0, 0),
     yargs =>
-      wrapWithStreams(addBBoxes)(stdin, stdout, yargs.silent).catch(onError)
+      wrapWithStreams(addUpdateBBoxes)(stdin, stdout, yargs.silent).catch(
+        onError
+      )
   )
   .command(
     'remove',
