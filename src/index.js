@@ -72,16 +72,32 @@ const wrapWithStreams = func => {
   }
 }
 
-class RemoveBBoxes extends Transform {
+class GeojsonNullTransform extends Transform {
   constructor (options = {}) {
     options['decodeStrings'] = false
     super(options)
+    this.input = ''
   }
 
   _transform (chunk, encoding, callback) {
-    let geojson = parseGeojsonStr(chunk)
-    removeBBoxes(geojson)
+    this.input += chunk
+    callback()
+  }
+
+  _flush (callback) {
+    let geojson = parseGeojsonStr(this.input)
+    this.operate(geojson)
     callback(null, JSON.stringify(geojson))
+  }
+
+  operate (geojson) {
+    return geojson
+  }
+}
+
+class RemoveBBoxes extends GeojsonNullTransform {
+  operate (geojson) {
+    removeBBoxes(geojson)
   }
 }
 

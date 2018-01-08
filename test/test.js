@@ -103,8 +103,8 @@ test('remove bboxes read in awkward chunks', () => {
   remover.pipe(strOut)
 
   // feed the str in in 50 char increments
-  for (let i = 0; (i += 50); i <= strIn.length) {
-    remover.write(strIn.substr(i, i + 50))
+  for (let i = 0; i <= strIn.length; i += 50) {
+    remover.write(strIn.substr(i, 50))
   }
   remover.end()
 
