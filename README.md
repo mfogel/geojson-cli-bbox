@@ -23,4 +23,14 @@ Remove all `bbox` values.
 
 ### `-s` / `--silent`
 
-Sometimes it is better to say nothing at all. Any warnings, normally written to `stderr`, will be sent straight to `/dev/null`.
+Send any warnings (normally written to `stderr`) straight to `/dev/null`.
+
+## Changelog
+
+### Master
+
+* Internally, use [Transform streams](https://nodejs.org/docs/latest-v9.x/api/stream.html#stream_implementing_a_transform_stream)
+
+### 0.1
+
+* Initial release
