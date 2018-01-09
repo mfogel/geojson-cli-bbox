@@ -4,7 +4,7 @@ const { stdin, stdout, exit } = require('process')
 const { AddUpdateBBoxes, RemoveBBoxes } = require('./index.js')
 
 const onError = err => {
-  console.error(err.message)
+  console.error(`Error: ${err.message}`)
   exit(1)
 }
 
