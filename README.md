@@ -27,7 +27,7 @@ Send any warnings (normally written to `stderr`) straight to `/dev/null`.
 
 ## Changelog
 
-### Master
+### 0.2
 
 * Internally, use [Transform streams](https://nodejs.org/docs/latest-v9.x/api/stream.html#stream_implementing_a_transform_stream)
 
