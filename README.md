@@ -27,7 +27,7 @@ Send any warnings (normally written to `stderr`) straight to `/dev/null`.
 
 ## Changelog
 
-### Master
+### 0.2.1
 
  * Add license file
 
