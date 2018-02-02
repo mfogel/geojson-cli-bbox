@@ -31,9 +31,13 @@ Send any warnings (normally written to `stderr`) straight to `/dev/null`.
 
 ## Changelog
 
+### 0.2.2
+
+* Set up CI: travis, coveralls
+
 ### 0.2.1
 
- * Add license file
+* Add license file
 
 ### 0.2
 

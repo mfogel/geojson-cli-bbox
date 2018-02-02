@@ -1,6 +1,6 @@
 {
   "name": "geojson-cli-bbox",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Add, update, or remove bounding boxes from your GeoJSON files.",
   "repository": "github:mfogel/geojson-cli-bbox",
   "main": "src/index.js",
