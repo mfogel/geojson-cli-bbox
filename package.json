@@ -10,6 +10,7 @@
     "test-debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
   },
   "jest": {
+    "collectCoverage": true,
     "testEnvironment": "node"
   },
   "keywords": [
@@ -25,6 +26,7 @@
     "yargs": "^11.0.0"
   },
   "devDependencies": {
+    "coveralls": "^3.0.0",
     "jest": "^22.1.4",
     "stream-to-string": "^1.1.0",
     "string-to-stream": "^1.1.0"

@@ -2,6 +2,10 @@
 
 Add, update, or remove bounding boxes from your GeoJSON files.
 
+[![npm version](https://img.shields.io/npm/v/geojson-cli-bbox.svg)](https://www.npmjs.com/package/geojson-cli-bbox)
+[![build status](https://img.shields.io/travis/mfogel/geojson-cli-bbox.svg)](https://travis-ci.org/mfogel/geojson-cli-bbox)
+[![test coverage](https://img.shields.io/coveralls/mfogel/geojson-cli-bbox/master.svg)](https://coveralls.io/r/mfogel/geojson-cli-bbox)
+
 ## Quickstart
 
 ```sh
