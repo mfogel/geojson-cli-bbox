@@ -43,12 +43,12 @@ test('warn on valid json but invalid geojson input', () => {
   })
 })
 
-const readInStr = fn => fs.readFileSync('test/geojson/' + fn, 'utf8')
+const readInStr = fn => fs.readFileSync('test/fixtures/' + fn, 'utf8')
 const readInJson = fn => JSON.parse(readInStr(fn))
 
 test('stream json in one chunk', () => {
   const strIn = fs.createReadStream(
-    'test/geojson/polygon-right-bbox.geojson',
+    'test/fixtures/polygon-right-bbox.geojson',
     'utf8'
   )
   const nullTransform = new GeojsonNullTransform()
